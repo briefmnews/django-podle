@@ -2,10 +2,10 @@
 .idea
 *.pyc
 .pytest_cache
-django_ent.egg-info
 
 #Tests coverage
 dist/
 build/
 .coverage
 htmlcov/
+*.egg-info

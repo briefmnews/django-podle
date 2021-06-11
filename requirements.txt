@@ -1,3 +1,7 @@
 Django==2.2.24
 djangorestframework==3.12.4
 requests==2.25.1
+pytest-pythonpath==0.7.3
+setuptools==41.2.0
+twine==3.2.0
+wheel==0.35.1
