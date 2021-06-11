@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 from os import path
 
@@ -16,7 +16,7 @@ setup(
     author="Brief.me",
     author_email="tech@brief.me",
     license="MIT",
-    packages=["podle", "podle.migrations", "podle.signals"],
+    packages=find_packages(exclude=["tests"]),
     python_requires=">=3.7",
     install_requires=[
         "Django>=2.2",
