@@ -32,6 +32,7 @@ class NewsletterWebhook(APIView):
                 sender=Newsletter,
                 success=True,
                 audio_url=serializer.validated_data["newsletter_url"],
+                newsletter=newsletter,
             )
             return Response(data={"success": True}, status=status.HTTP_200_OK)
 
