@@ -35,9 +35,11 @@ class PodleHelper:
     """
 
     client = PodleHttpClient()
+    base_url = "https://api.podle.io/v1"
     endpoints = {
-        "newsletters": "https://api.podle.io/v1/newsletters",
-        "dictionaries": "https://api.podle.io/v1/dictionaries/default/words",
+        "newsletters": f"{base_url}/newsletters",
+        "dictionaries": f"{base_url}/dictionaries/default/words",
+        "rss": f"{base_url}/rss",
     }
 
     def create_newsletter(self, data):
@@ -63,3 +65,15 @@ class PodleHelper:
     def lookup_all_words(self):
         url = self.endpoints["dictionaries"]
         return self.client.make_request(url, "GET")
+
+    def get_private_rss(self, subscriber_id, newsletter_name):
+        url = f"{self.endpoints['rss']}?subscriberId={subscriber_id}&newsletterName={newsletter_name}"
+        return self.client.make_request(url, "GET")
+
+    def create_private_rss(self, data):
+        url = self.endpoints["rss"]
+        return self.client.make_request(url, "POST", data)
+
+    def delete_private_rss(self, subscriber_id, newsletter_name):
+        url = f"{self.endpoints['rss']}?subscriberId={subscriber_id}&newsletterName={newsletter_name}"
+        return self.client.make_request(url, "DELETE")
