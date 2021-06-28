@@ -48,9 +48,9 @@ You can give an url to Podle to get a webhook when the newsletter audio file is 
 The webhook will be post to `{YOUR_DOMAIN}/podle/webhook`.
 A signal called `audio_file` is sent when receiving the webhook.
 
-In case of success, if the audio file is created:
+In case of success, if the audio file is created with an existing `newsletter` object:
 ```python
-audio_file.send(sender=Newsletter, success=True, audio_url=serializer.validated_data["newsletter_url"])
+audio_file.send(sender=Newsletter, success=True, audio_url=serializer.validated_data["newsletter_url"], newsletter=newsletter)
 ```
 
 In case of an error:
