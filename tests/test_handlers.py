@@ -29,12 +29,28 @@ class TestDictionaryHandlers:
             {"value": word.pronunciation, "raw": word.word}
         )
 
+    def test_create_dictionary_word_with_error_in_response(self, mock_create_or_update_word):
+        # GIVEN
+        mock_create_or_update_word.return_value = {}
+
+        # WHEN / THEN
+        with pytest.raises(Exception):
+            DictionaryFactory(pronunciation="hello", word="hello")
+
     def test_delete_dictionary_word(self, word, mock_delete_word):
         # WHEN
         word.delete()
 
         # THEN
         mock_delete_word.assert_called_once_with(word.word)
+
+    def test_delete_dictionary_word_with_error_in_response(self, word, mock_delete_word):
+        # GIVEN
+        mock_delete_word.return_value = {}
+
+        # WHEN / THEN
+        with pytest.raises(Exception):
+            word.delete()
 
 
 class TestRssFeedHandlers:
