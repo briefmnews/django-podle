@@ -1,8 +1,11 @@
 from django.db import models
 
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
-from .managers import NewsletterManager
+from .managers import NewsletterManager, RssFeedManager
+
+User = get_user_model()
 
 
 class Newsletter(models.Model):
@@ -30,3 +33,13 @@ class Dictionary(models.Model):
 
     def __str__(self):
         return f"{self.word} - [{self.pronunciation}]"
+
+
+class RssFeed(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    feed = models.URLField(blank=True, null=True)
+
+    objects = RssFeedManager()
+
+    def __str__(self):
+        return f"{self.user} - {self.feed}"

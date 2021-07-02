@@ -27,3 +27,11 @@ class NewsletterManager(models.Manager):
         json_content["newsletterId"] = str(newsletter.uuid)
         PodleHelper().create_newsletter(json_content)
         return newsletter
+
+
+class RssFeedManager(models.Manager):
+    def get_rss_feed(self, user):
+        try:
+            return self.get(user=user).feed
+        except self.model.DoesNotExist:
+            return None
