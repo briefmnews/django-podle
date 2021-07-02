@@ -41,9 +41,10 @@ python manage.py migrate
 Here is the list of all the mandatory settings:
 ```python
 PODLE_AUTH_TOKEN: api key to consume the api
+PODLE_NEWSLETTER_NAME: name of the newsletter. Useful for RSS feed
 ```
 
-### Webhook
+## Webhook
 You can give an url to Podle to get a webhook when the newsletter audio file is created.
 The webhook will be post to `{YOUR_DOMAIN}/podle/webhook`.
 A signal called `audio_file` is sent when receiving the webhook.
@@ -58,7 +59,8 @@ In case of an error:
 audio_file.send(sender=Newsletter, success=False, errors=serializer.errors)
 ```
 
-### How to use?
+## How to use?
+### Create or update a newsletter
 Here is a quick example of how to create an audio file with podle.
 ```python
 from podle.models import Newsletter
@@ -140,4 +142,30 @@ json_content = {
 }
 
 Newsletter.objects.create_or_update_newsletter(YourModel, json_content)
+```
+
+### Private RSS feed
+You can create an RSS feed for your users to use with podcast applications like Pocket Casts or Overcast.
+
+You can handle RSS feed in the admin or with code:
+
+#### Create a private RSS feed
+```python
+from podle.models import RssFeed
+
+RssFeed.objects.create(user=user)
+```
+
+#### Get an existing private RSS feed
+```python
+from podle.models import RssFeed
+
+RssFeed.objects.get_rss_feed(user=user)
+```
+
+#### Delete a private RSS feed
+```python
+from podle.models import RssFeed
+
+RssFeed.objects.get(user=user).delete()
 ```
