@@ -1,6 +1,6 @@
 import pytest
 
-from podle.models import Newsletter
+from podle.models import Newsletter, RssFeed
 from .factories import DummyDataFactory
 
 pytestmark = pytest.mark.django_db()
@@ -30,3 +30,19 @@ class TestNewsletterManager:
         mock_create_newsletter.assert_called_once_with(
             {"newsletterId": str(newsletter.uuid)}
         )
+
+
+class TestRssFeedManager:
+    def test_get_rss_feed_with_existing_feed(self, rss_feed):
+        # WHEN
+        response = RssFeed.objects.get_rss_feed(rss_feed.user)
+
+        # THEN
+        assert response == rss_feed.feed
+
+    def test_get_rss_feed_without_feed(self, user):
+        # WHEN
+        response = RssFeed.objects.get_rss_feed(user)
+
+        # THEN
+        assert not response

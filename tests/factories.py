@@ -1,10 +1,13 @@
 import factory
 import uuid
 
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
-from podle.models import Newsletter, Dictionary
+from podle.models import Newsletter, Dictionary, RssFeed
 from .models import DummyData
+
+User = get_user_model()
 
 
 class DummyDataFactory(factory.django.DjangoModelFactory):
@@ -12,6 +15,11 @@ class DummyDataFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = DummyData
+
+
+class UserFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = User
 
 
 class NewsletterFactory(factory.django.DjangoModelFactory):
@@ -32,3 +40,11 @@ class DictionaryFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Dictionary
+
+
+class RssFeedFactory(factory.django.DjangoModelFactory):
+    user = factory.SubFactory(UserFactory)
+    feed = factory.sequence(lambda n: f"http://example.com/{n}.rss")
+
+    class Meta:
+        model = RssFeed
