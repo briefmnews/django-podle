@@ -29,7 +29,9 @@ class TestDictionaryHandlers:
             {"value": word.pronunciation, "raw": word.word}
         )
 
-    def test_create_dictionary_word_with_error_in_response(self, mock_create_or_update_word):
+    def test_create_dictionary_word_with_error_in_response(
+        self, mock_create_or_update_word
+    ):
         # GIVEN
         mock_create_or_update_word.return_value = {}
 
@@ -44,7 +46,9 @@ class TestDictionaryHandlers:
         # THEN
         mock_delete_word.assert_called_once_with(word.word)
 
-    def test_delete_dictionary_word_with_error_in_response(self, word, mock_delete_word):
+    def test_delete_dictionary_word_with_error_in_response(
+        self, word, mock_delete_word
+    ):
         # GIVEN
         mock_delete_word.return_value = {}
 
@@ -56,9 +60,7 @@ class TestDictionaryHandlers:
 class TestRssFeedHandlers:
     def test_create_rss_feed(self, mock_create_private_rss, user, settings):
         # GIVEN
-        mock_create_private_rss.return_value = {
-            str(user.pk): "http://www.example.rss"
-        }
+        mock_create_private_rss.return_value = {str(user.pk): "http://www.example.rss"}
         # WHEN
         RssFeedFactory(user=user, feed="")
 
@@ -70,11 +72,11 @@ class TestRssFeedHandlers:
             }
         )
 
-    def test_create_rss_feed_with_error_in_response(self, mock_create_private_rss, user):
+    def test_create_rss_feed_with_error_in_response(
+        self, mock_create_private_rss, user
+    ):
         # GIVEN
-        mock_create_private_rss.return_value = {
-            str(user.pk): ""
-        }
+        mock_create_private_rss.return_value = {str(user.pk): ""}
         # WHEN / THEN
         with pytest.raises(Exception):
             RssFeedFactory(user=user, feed="")
@@ -87,9 +89,13 @@ class TestRssFeedHandlers:
         rss_feed.delete()
 
         # THEN
-        mock_delete_private_rss.assert_called_once_with(rss_feed.user.pk, settings.PODLE_NEWSLETTER_NAME)
+        mock_delete_private_rss.assert_called_once_with(
+            rss_feed.user.pk, settings.PODLE_NEWSLETTER_NAME
+        )
 
-    def test_delete_rss_feed_with_error_in_response(self, mock_delete_private_rss, rss_feed):
+    def test_delete_rss_feed_with_error_in_response(
+        self, mock_delete_private_rss, rss_feed
+    ):
         # GIVEN
         mock_delete_private_rss.return_value = {str(rss_feed.user.pk): ""}
 
