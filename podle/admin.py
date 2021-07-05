@@ -1,6 +1,9 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 
 from .models import Dictionary, Newsletter, RssFeed
+
+User = get_user_model()
 
 
 class NewsletterAdmin(admin.ModelAdmin):
@@ -13,10 +16,12 @@ class DictionaryAdmin(admin.ModelAdmin):
 
 
 class RssFeedAdmin(admin.ModelAdmin):
-    search_fields = ("user", "feed")
     list_display = ("user", "feed")
     readonly_fields = ("feed",)
     raw_id_fields = ("user",)
+
+    def get_search_fields(self, request):
+        return {"feed", f"user__{User.USERNAME_FIELD}"}
 
 
 admin.site.register(Newsletter, NewsletterAdmin)
