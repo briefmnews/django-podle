@@ -14,3 +14,4 @@ INSTALLED_APPS = (
 DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3"}}
 
 PODLE_NEWSLETTER_NAME = "dummy_newsletter"
+PODLE_RSS_FEED_GROUP_NAME = "dummy-group"

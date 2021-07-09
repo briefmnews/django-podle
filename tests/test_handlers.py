@@ -1,7 +1,8 @@
 import pytest
 
 from .factories import DictionaryFactory, RssFeedFactory
-from podle.models import Dictionary
+from podle.models import Dictionary, RssFeed
+from podle.signals.handlers import handle_rss_feeds
 
 pytestmark = pytest.mark.django_db()
 
@@ -61,6 +62,7 @@ class TestRssFeedHandlers:
     def test_create_rss_feed(self, mock_create_private_rss, user, settings):
         # GIVEN
         mock_create_private_rss.return_value = {str(user.pk): "http://www.example.rss"}
+
         # WHEN
         RssFeedFactory(user=user, feed="")
 
@@ -77,6 +79,7 @@ class TestRssFeedHandlers:
     ):
         # GIVEN
         mock_create_private_rss.return_value = {str(user.pk): ""}
+
         # WHEN / THEN
         with pytest.raises(Exception):
             RssFeedFactory(user=user, feed="")
@@ -102,3 +105,100 @@ class TestRssFeedHandlers:
         # WHEN / THEN
         with pytest.raises(Exception):
             rss_feed.delete()
+
+    def test_handle_rss_feeds_with_single_user_post_add(
+        self, group_rss_feed, user, mock_create_private_rss
+    ):
+        # GIVEN
+        mock_create_private_rss.return_value = {str(user.pk): "http://www.example.rss"}
+        group_pks = [group_rss_feed.pk]
+        group_rss_feed.user_set.add(user)
+
+        # WHEN
+        handle_rss_feeds(
+            instance=user,
+            action="post_add",
+            reverse=False,
+            model=RssFeed,
+            pk_set=set(group_pks),
+            using="default",
+        )
+
+        # THEN
+        assert mock_create_private_rss.call_count == 1
+
+    def test_handle_rss_feeds_with_single_user_post_remove(
+        self, rss_feed, group_rss_feed, mock_delete_private_rss
+    ):
+        # GIVEN
+        user = rss_feed.user
+        mock_delete_private_rss.return_value = {str(user.pk): "deleted"}
+        group_pks = [group_rss_feed.pk]
+        group_rss_feed.user_set.add(user)
+
+        # WHEN
+        handle_rss_feeds(
+            instance=user,
+            action="post_remove",
+            reverse=False,
+            model=RssFeed,
+            pk_set=set(group_pks),
+            using="default",
+        )
+
+        # THEN
+        assert mock_delete_private_rss.call_count == 1
+
+    def test_handle_rss_feed_works_with_reverse_m2m_post_add(
+        self, group_rss_feed, user, mock_create_private_rss
+    ):
+        # GIVEN
+        mock_create_private_rss.return_value = {str(user.pk): "http://www.example.rss"}
+
+        # WHEN
+        handle_rss_feeds(
+            instance=group_rss_feed,
+            action="post_add",
+            reverse=True,
+            model=RssFeed,
+            pk_set=[user.pk],
+            using="default",
+        )
+
+        # THEN
+        assert mock_create_private_rss.call_count == 1
+
+    def test_handle_rss_feed_works_with_reverse_m2m_post_remove(
+        self, group_rss_feed, mock_delete_private_rss, rss_feed
+    ):
+        # GIVEN
+        user = rss_feed.user
+        mock_delete_private_rss.return_value = {str(user.pk): "deleted"}
+
+        # WHEN
+        handle_rss_feeds(
+            instance=group_rss_feed,
+            action="post_remove",
+            reverse=True,
+            model=RssFeed,
+            pk_set=[user.pk],
+            using="default",
+        )
+
+        # THEN
+        assert mock_delete_private_rss.call_count == 1
+
+    @pytest.mark.parametrize("action", ["post_add", "post_remove"])
+    def test_handle_rss_feed_with_group_not_in_pk_set(self, action, user):
+        # GIVEN / WHEN
+        response = handle_rss_feeds(
+            instance=user,
+            action=action,
+            reverse=False,
+            model=RssFeed,
+            pk_set={0},
+            using="default",
+        )
+
+        # THEN
+        assert not response

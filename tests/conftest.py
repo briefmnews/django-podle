@@ -5,7 +5,13 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.test.client import RequestFactory
 
 from podle.managers import PodleHelper
-from .factories import NewsletterFactory, DictionaryFactory, RssFeedFactory, UserFactory
+from .factories import (
+    NewsletterFactory,
+    DictionaryFactory,
+    RssFeedFactory,
+    UserFactory,
+    GroupFactory,
+)
 
 
 @pytest.fixture
@@ -71,6 +77,11 @@ def mock_delete_private_rss(mocker):
         PodleHelper,
         "delete_private_rss",
     )
+
+
+@pytest.fixture
+def group_rss_feed():
+    return GroupFactory()
 
 
 @pytest.fixture

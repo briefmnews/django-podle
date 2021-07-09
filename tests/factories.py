@@ -1,7 +1,9 @@
 import factory
 import uuid
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 
 from podle.models import Newsletter, Dictionary, RssFeed
@@ -20,6 +22,13 @@ class DummyDataFactory(factory.django.DjangoModelFactory):
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
+
+
+class GroupFactory(factory.django.DjangoModelFactory):
+    name = settings.PODLE_RSS_FEED_GROUP_NAME
+
+    class Meta:
+        model = Group
 
 
 class NewsletterFactory(factory.django.DjangoModelFactory):
