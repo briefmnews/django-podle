@@ -44,6 +44,12 @@ PODLE_AUTH_TOKEN: api key to consume the api
 PODLE_NEWSLETTER_NAME: name of the newsletter. Useful for RSS feed
 ```
 
+### Optional settings
+Here is the list of all the mandatory settings:
+```python
+PODLE_RSS_FEED_GROUP_NAME: group name for creating / deleting private RSS feed.
+```
+
 ## Webhook
 You can give an url to Podle to get a webhook when the newsletter audio file is created.
 The webhook will be post to `{YOUR_DOMAIN}/podle/webhook`.
@@ -169,3 +175,7 @@ from podle.models import RssFeed
 
 RssFeed.objects.get(user=user).delete()
 ```
+
+#### Create or delete Rss feeds
+Adding a single user or users to the group defined in the PODLE_RSS_FEED_GROUP_NAME setting
+will create or delete the rss feed for those users.
