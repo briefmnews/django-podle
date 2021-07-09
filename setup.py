@@ -8,7 +8,7 @@ with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="django-podle",
-    version="0.3.1",
+    version="0.4.0",
     description="Integration with Podle.io podcast app",
     long_description=long_description,
     long_description_content_type="text/markdown",
