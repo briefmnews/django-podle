@@ -179,3 +179,19 @@ RssFeed.objects.get(user=user).delete()
 #### Create or delete Rss feeds
 Adding a single user or users to the group defined in the PODLE_RSS_FEED_GROUP_NAME setting
 will create or delete the rss feed for those users.
+
+#### Batch create of delete Rss feeds
+__Important__: In order to use those two endpoints you need to ask Podle to activate them.
+
+Here is an example of usage:
+```python
+from django.contrib.auth import get_user_model
+from podle.models import RssFeed
+User = get_user_model()
+
+users = User.objects.all()
+
+RssFeed.objects.create_rss_feed(users)
+
+RssFeed.objects.delete_rss_feed(users)
+```
