@@ -40,6 +40,7 @@ class PodleHelper:
         "newsletters": f"{base_url}/newsletters",
         "dictionaries": f"{base_url}/dictionaries/default/words",
         "rss": f"{base_url}/rss",
+        "rss_batch": f"{base_url}/rss/batch",
     }
 
     def create_newsletter(self, data):
@@ -77,3 +78,11 @@ class PodleHelper:
     def delete_private_rss(self, subscriber_id, newsletter_name):
         url = f"{self.endpoints['rss']}?subscriberId={subscriber_id}&newsletterName={newsletter_name}"
         return self.client.make_request(url, "DELETE")
+
+    def create_batch_private_rss(self, data):
+        url = self.endpoints["rss_batch"]
+        return self.client.make_request(url, "POST", data)
+
+    def delete_batch_private_rss(self, data):
+        url = self.endpoints["rss_batch"]
+        return self.client.make_request(url, "DELETE", data)

@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
@@ -35,3 +36,63 @@ class RssFeedManager(models.Manager):
             return self.get(user=user).feed
         except self.model.DoesNotExist:
             return None
+
+    def create_rss_feed(self, users):
+        for batch_users in self._batch_qs(users):
+            data = {
+                "subscribers": [
+                    {
+                        "subscriberId": user.pk,
+                        "newsletterName": settings.PODLE_NEWSLETTER_NAME,
+                    }
+                    for user in batch_users
+                ]
+            }
+
+            response = PodleHelper().create_batch_private_rss(data)
+
+            # Format the response and bulk update or create the Rss feed objects for RssFeed model
+            objs = []
+            for obj in response:
+                rss_feed, _ = self.update_or_create(
+                    user_id=list(obj)[0], defaults={"feed": list(obj.values())[0]}
+                )
+                objs.append(rss_feed)
+
+            self.bulk_update(objs, ["user_id", "feed"])
+
+    def delete_rss_feed(self, users):
+        for batch_users in self._batch_qs(users):
+            data = {
+                "subscribers": [
+                    {
+                        "subscriberId": user.pk,
+                        "newsletterName": settings.PODLE_NEWSLETTER_NAME,
+                    }
+                    for user in batch_users
+                ]
+            }
+
+            response = PodleHelper().delete_batch_private_rss(data)
+
+            # Delete the Rss feed objects from RssFeed model
+            user_ids = []
+            for obj in response:
+                user_ids.append(list(obj)[0])
+
+            qs = self.filter(user_id__in=user_ids)
+
+            # We use _raw_delete as we don't want to trigger the signals when bulk deleting.
+            # We couldn't find a better way to do it as for now.
+            qs._raw_delete(qs.db)
+
+    @staticmethod
+    def _batch_qs(qs, batch_size=500):
+        """
+        Returns a  queryset for each batch in the given
+        queryset.
+        """
+        total = qs.count()
+        for start in range(0, total, batch_size):
+            end = min(start + batch_size, total)
+            yield qs[start:end]
