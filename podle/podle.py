@@ -30,8 +30,8 @@ class PodleHttpClient:
 
 class PodleHelper:
     """
-    Podle helper to interact the API.
-    https://docs.podle.io/
+    Podle helper to interact with the API.
+    https://api.podle.io/documentation
     """
 
     client = PodleHttpClient()
