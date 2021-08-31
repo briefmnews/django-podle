@@ -87,7 +87,7 @@ class RssFeedManager(models.Manager):
             qs._raw_delete(qs.db)
 
     @staticmethod
-    def _batch_qs(qs, batch_size=500):
+    def _batch_qs(qs, batch_size=200):
         """
         Returns a  queryset for each batch in the given
         queryset.
