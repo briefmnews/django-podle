@@ -4,6 +4,14 @@ import requests
 from django.conf import settings
 
 
+class PodleError(Exception):
+    pass
+
+
+class PodleGatewayTimeoutError(PodleError):
+    pass
+
+
 class PodleHttpClient:
     @staticmethod
     def make_request(url, method, data=None):
@@ -18,6 +26,11 @@ class PodleHttpClient:
         try:
             response = requests.request(method, url, json=data, headers=headers)
             result = response.text
+
+            # Catch HTTP errors
+            if response.status_code == 504:
+                raise PodleGatewayTimeoutError(result)
+
         except Exception as e:
             raise e
 
