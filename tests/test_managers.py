@@ -73,3 +73,29 @@ class TestRssFeedManager:
                 ]
             }
         )
+
+    def test_delete_rss_feed(self, users_with_rss_feeds, mocker, settings):
+        # GIVEN
+        mock_delete_batch_private_rss = mocker.patch.object(
+            PodleHelper,
+            "delete_batch_private_rss",
+            return_value=[{user.pk: "deleted"} for user in users_with_rss_feeds],
+        )
+        assert RssFeed.objects.count() == users_with_rss_feeds.count()
+
+        # WHEN
+        RssFeed.objects.delete_rss_feed(users_with_rss_feeds)
+
+        # THEN
+        assert RssFeed.objects.count() == 0
+        mock_delete_batch_private_rss.assert_called_once_with(
+            {
+                "subscribers": [
+                    {
+                        "subscriberId": user.pk,
+                        "newsletterName": settings.PODLE_NEWSLETTER_NAME,
+                    }
+                    for user in users_with_rss_feeds
+                ]
+            }
+        )

@@ -50,6 +50,16 @@ def users():
 
 
 @pytest.fixture
+def users_with_rss_feeds():
+    pks = []
+    for i in range(0, 10):
+        rss_feed = RssFeedFactory()
+        pks.append(rss_feed.pk)
+
+    return User.objects.filter(rssfeed__pk__in=pks)
+
+
+@pytest.fixture
 def mock_create_newsletter(mocker):
     return mocker.patch.object(
         PodleHelper,
