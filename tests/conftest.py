@@ -1,5 +1,6 @@
 import pytest
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test.client import RequestFactory
@@ -12,6 +13,8 @@ from .factories import (
     UserFactory,
     GroupFactory,
 )
+
+User = get_user_model()
 
 
 @pytest.fixture
@@ -34,6 +37,16 @@ def rss_feed():
 @pytest.fixture
 def user():
     return UserFactory()
+
+
+@pytest.fixture
+def users():
+    pks = []
+    for i in range(0, 10):
+        u = UserFactory()
+        pks.append(u.pk)
+
+    return User.objects.filter(pk__in=pks)
 
 
 @pytest.fixture

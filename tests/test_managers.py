@@ -1,6 +1,7 @@
 import pytest
 
 from podle.models import Newsletter, RssFeed
+from podle.podle import PodleHelper
 from .factories import DummyDataFactory
 
 pytestmark = pytest.mark.django_db()
@@ -46,3 +47,29 @@ class TestRssFeedManager:
 
         # THEN
         assert not response
+
+    def test_create_rss_feed(self, users, mocker, settings):
+        # GIVEN
+        mock_create_batch_private_rss = mocker.patch.object(
+            PodleHelper,
+            "create_batch_private_rss",
+            return_value=[{user.pk: "https://dummyurl.io"} for user in users],
+        )
+        assert RssFeed.objects.count() == 0
+
+        # WHEN
+        RssFeed.objects.create_rss_feed(users)
+
+        # THEN
+        assert RssFeed.objects.count() == users.count()
+        mock_create_batch_private_rss.assert_called_once_with(
+            {
+                "subscribers": [
+                    {
+                        "subscriberId": user.pk,
+                        "newsletterName": settings.PODLE_NEWSLETTER_NAME,
+                    }
+                    for user in users
+                ]
+            }
+        )

@@ -20,6 +20,8 @@ class DummyDataFactory(factory.django.DjangoModelFactory):
 
 
 class UserFactory(factory.django.DjangoModelFactory):
+    username = factory.Sequence(lambda n: f"John Doe {n}")
+
     class Meta:
         model = User
 
