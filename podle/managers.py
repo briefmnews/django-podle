@@ -38,7 +38,7 @@ class RssFeedManager(models.Manager):
             return None
 
     def create_rss_feed(self, users):
-        for batch_users in self._batch_qs(users):
+        for batch_users in self._chunked_queryset(users):
             data = {
                 "subscribers": [
                     {
@@ -62,7 +62,7 @@ class RssFeedManager(models.Manager):
             self.bulk_update(objs, ["user_id", "feed"])
 
     def delete_rss_feed(self, users):
-        for batch_users in self._batch_qs(users):
+        for batch_users in self._chunked_queryset(users):
             data = {
                 "subscribers": [
                     {
@@ -87,12 +87,27 @@ class RssFeedManager(models.Manager):
             qs._raw_delete(qs.db)
 
     @staticmethod
-    def _batch_qs(qs, batch_size=200):
-        """
-        Returns a  queryset for each batch in the given
-        queryset.
-        """
-        total = qs.count()
-        for start in range(0, total, batch_size):
-            end = min(start + batch_size, total)
-            yield qs[start:end]
+    def _chunked_queryset(queryset, chunk_size=200):
+        """Slice a queryset into chunks."""
+
+        start_pk = 0
+        queryset = queryset.order_by("pk")
+
+        while True:
+            # No entry left
+            if not queryset.filter(pk__gt=start_pk).exists():
+                break
+
+            try:
+                # Fetch chunk_size entries if possible
+                end_pk = queryset.filter(pk__gt=start_pk).values_list("pk", flat=True)[
+                    chunk_size - 1
+                ]
+
+                # Fetch rest entries if less than chunk_size left
+            except IndexError:
+                end_pk = queryset.values_list("pk", flat=True).last()
+
+            yield queryset.filter(pk__gt=start_pk).filter(pk__lte=end_pk)
+
+            start_pk = end_pk
