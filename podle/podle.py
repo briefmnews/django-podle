@@ -8,6 +8,10 @@ class PodleError(Exception):
     pass
 
 
+class PodleUnprocessableEntityError(Exception):
+    pass
+
+
 class PodleGatewayTimeoutError(PodleError):
     pass
 
@@ -30,6 +34,8 @@ class PodleHttpClient:
             # Catch HTTP errors
             if response.status_code == 504:
                 raise PodleGatewayTimeoutError(result)
+            elif response.status_code == 422:
+                raise PodleUnprocessableEntityError(result)
 
         except Exception as e:
             raise e
