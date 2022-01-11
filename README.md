@@ -5,10 +5,15 @@
 [![codecov](https://codecov.io/gh/briefmnews/django-podle/branch/main/graph/badge.svg?token=w8N0eR6uLr)](https://codecov.io/gh/briefmnews/django-podle)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)  
 Integration with [Podle.io](https://podle.io/) podcast app.  
-See Podle documentation [here](https://docs.podle.io/).
+See Podle documentation [here](https://api.podle.io/documentation).
 
 ## Installation
-Install with [pip](https://pip.pypa.io/en/stable/):
+Install with pip from PyPI:
+```shell
+pip install django-podle
+```
+
+Or install with pip from the main branch:
 ```shell
 pip install -e git://github.com/briefmnews/django-podle.git@main#egg=django-podle
 ```
@@ -41,13 +46,13 @@ python manage.py migrate
 Here is the list of all the mandatory settings:
 ```python
 PODLE_AUTH_TOKEN: api key to consume the api
-PODLE_NEWSLETTER_NAME: name of the newsletter. Useful for RSS feed
+PODLE_NEWSLETTER_NAME: name of the newsletter. Useful for RSS feed only
 ```
 
 ### Optional settings
-Here is the list of all the mandatory settings:
+Here is the list of all the optional settings:
 ```python
-PODLE_RSS_FEED_GROUP_NAME: group name for creating / deleting private RSS feed.
+PODLE_RSS_FEED_GROUP_NAME: group name for creating / deleting private RSS feed. The native django signal is caught when the user enters or leaves the group to create or delete the RSS feed.
 ```
 
 ## Webhook
@@ -181,7 +186,7 @@ Adding a single user or users to the group defined in the PODLE_RSS_FEED_GROUP_N
 will create or delete the rss feed for those users.
 
 #### Batch create of delete Rss feeds
-__Important__: In order to use those two endpoints you need to ask Podle to activate them.
+__Important__: In order to use those two endpoints you need to ask Podle to activate them and allocate the resources otherwise it will break.
 
 Here is an example of usage:
 ```python
