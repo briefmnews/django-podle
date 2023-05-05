@@ -123,7 +123,7 @@ class RequestBuilder:
         request = rf.post(path=path, data=data)
         request.user = user or AnonymousUser()
 
-        middleware = SessionMiddleware()
+        middleware = SessionMiddleware("dummy")
         middleware.process_request(request)
         request.session.save()
 
