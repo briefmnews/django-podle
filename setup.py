@@ -1,3 +1,5 @@
+import podle
+
 from setuptools import setup, find_packages
 
 from os import path
@@ -8,7 +10,7 @@ with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="django-podle",
-    version="0.6.1",
+    version=podle.__version__,
     description="Integration with Podle.io podcast app",
     long_description=long_description,
     long_description_content_type="text/markdown",
